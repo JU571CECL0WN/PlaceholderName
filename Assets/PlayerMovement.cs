@@ -1,7 +1,8 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
     public float speed = 5f;
 
@@ -13,9 +14,10 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    // ESTE MÉTODO LO LLAMA PlayerInput AUTOMÁTICAMENTE
     void OnMove(InputValue value)
     {
+        if (!IsOwner) return;
+
         moveInput = value.Get<Vector2>();
     }
 
