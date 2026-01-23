@@ -4,6 +4,23 @@ using UnityEngine.Tilemaps;
 public class GridGenerator : MonoBehaviour{
 
     IRoomPositionProvider roomProvider;
+    IRoomPositionProvider CreateRoomProvider()
+    {
+        switch (roomProviderType)
+        {
+            case RoomProviderType.Fixed:
+                return new FixedGridRoomProvider();
+
+            case RoomProviderType.Random:
+                return new RandomRoomProvider();
+
+            default:
+                Debug.LogError("Unknown RoomProviderType");
+                return new FixedGridRoomProvider();
+        }
+    }
+
+    public RoomProviderType roomProviderType;
 
     public Tilemap floorTilemap;
     public Tilemap wallTilemap;
@@ -16,14 +33,14 @@ public class GridGenerator : MonoBehaviour{
 
     const int ROOM_SIZE = 6;
     const int ROOM_WALL_THICKNESS = 1;
-    const int ROOM_COUNT = 9;
+    const int ROOM_COUNT = 7;
 
     const int CORRIDOR_WIDTH = 2;
 
     void Start()
     {
         // roomProvider = new RandomRoomProvider();
-        roomProvider = new FixedGridRoomProvider();
+        roomProvider = CreateRoomProvider();
         int totalSize = FLOOR_SIZE + WALL_THICKNESS * 2;
         int[,] map = new int[totalSize, totalSize];
 
