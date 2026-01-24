@@ -8,6 +8,8 @@ public class PlayerMovement : NetworkBehaviour
 
     private Rigidbody2D rb;
     private Vector2 moveInput;
+    
+
 
     void Awake()
     {
