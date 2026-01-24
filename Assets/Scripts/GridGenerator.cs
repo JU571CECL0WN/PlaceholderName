@@ -1,6 +1,14 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+enum WallSide
+{
+    Top,
+    Bottom,
+    Left,
+    Right
+}
+
 public class GridGenerator : MonoBehaviour{
 
     IRoomPositionProvider roomProvider;
@@ -24,9 +32,11 @@ public class GridGenerator : MonoBehaviour{
 
     public Tilemap floorTilemap;
     public Tilemap wallTilemap;
+    public Tilemap doorTilemap;
 
     public TileBase floorTile;
     public TileBase wallTile;
+    public TileBase doorTile;
 
     const int FLOOR_SIZE = 32;
     const int WALL_THICKNESS = 2;
@@ -87,7 +97,7 @@ public class GridGenerator : MonoBehaviour{
 
     void PlaceRoom(int[,] map, int startX, int startY)
     {
-        int roomTotalSize = ROOM_SIZE + 2;
+        int roomTotalSize = ROOM_SIZE + ROOM_WALL_THICKNESS * 2;
 
         for (int y = 0; y < roomTotalSize; y++)
         {
@@ -103,6 +113,47 @@ public class GridGenerator : MonoBehaviour{
         }
     }
 
+    void PlaceDoorway(int[,] map, int startX, int startY)
+    {
+        int roomTotalSize = ROOM_SIZE + ROOM_WALL_THICKNESS * 2;
+
+        WallSide side = (WallSide)Random.Range(0, 4);
+
+        int min = 1;
+        int max = roomTotalSize - 2;
+
+        int localX = 0;
+        int localY = 0;
+
+        switch (side)
+        {
+            case WallSide.Top:
+                localX = Random.Range(min, max);
+                localY = roomTotalSize - 1;
+                break;
+
+            case WallSide.Bottom:
+                localX = Random.Range(min, max);
+                localY = 0;
+                break;
+
+            case WallSide.Left:
+                localX = 0;
+                localY = Random.Range(min, max);
+                break;
+
+            case WallSide.Right:
+                localX = roomTotalSize - 1;
+                localY = Random.Range(min, max);
+                break;
+        }
+
+        int mapX = startX + localX;
+        int mapY = startY + localY;
+
+        map[mapY, mapX] = 5; // DOOR
+    }
+
     void GenerateRooms(int[,] map)
     {
         var positions = roomProvider.GetRoomPositions(
@@ -116,7 +167,10 @@ public class GridGenerator : MonoBehaviour{
         foreach (var p in positions)
         {
             if (CanPlaceRoom(map, p.x, p.y))
+            {
                 PlaceRoom(map, p.x, p.y);
+                PlaceDoorway(map, p.x, p.y);
+            }
         }
     }
 
@@ -124,6 +178,7 @@ public class GridGenerator : MonoBehaviour{
     {
         floorTilemap.ClearAllTiles();
         wallTilemap.ClearAllTiles();
+        doorTilemap.ClearAllTiles();
         for (int y = 0; y < map.GetLength(0); y++)
         {
             for (int x = 0; x < map.GetLength(1); x++)
@@ -142,6 +197,9 @@ public class GridGenerator : MonoBehaviour{
 
                 else if (map[y, x] == 4)
                     wallTilemap.SetTile(pos, wallTile);
+
+                else if (map[y, x] == 5)
+                    doorTilemap.SetTile(pos, doorTile);
             }
         }
     }
