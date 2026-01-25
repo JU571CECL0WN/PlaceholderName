@@ -20,7 +20,7 @@ MonoBehaviour:
     SourceHashToOverride: 0
     OverridingTargetPrefab: {fileID: 0}
   - Override: 0
-    Prefab: {fileID: 4529605964216501774, guid: e583b358622ba344fb7340e328605e1c, type: 3}
+    Prefab: {fileID: 2472836693128984111, guid: 4b3bc04f26d0147499e96d1df961b8ca, type: 3}
     SourcePrefabToOverride: {fileID: 0}
     SourceHashToOverride: 0
     OverridingTargetPrefab: {fileID: 0}
