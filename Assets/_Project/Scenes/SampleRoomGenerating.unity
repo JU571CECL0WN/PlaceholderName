@@ -830,11 +830,43 @@ PrefabInstance:
       propertyPath: m_Name
       value: NetworkManager
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 7859296805711885794, guid: 14a3557550d6f5d4996c6a259a519f88, type: 3}
+      propertyPath: NetworkConfig.PlayerPrefab
+      value: 
+      objectReference: {fileID: 4529605964216501774, guid: eb23082eb0b506c44898b45a3771bb63, type: 3}
+    - target: {fileID: 7859296805711885794, guid: 14a3557550d6f5d4996c6a259a519f88, type: 3}
+      propertyPath: 'NetworkConfig.Prefabs.NetworkPrefabsLists.Array.data[0]'
+      value: 
+      objectReference: {fileID: 11400000, guid: f0e6d6b5a5b7945f6b7942595b1f06d3, type: 2}
+    m_RemovedComponents:
+    - {fileID: 7987735544141406879, guid: 14a3557550d6f5d4996c6a259a519f88, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1745239697540567484, guid: 14a3557550d6f5d4996c6a259a519f88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1245296088}
   m_SourcePrefab: {fileID: 100100000, guid: 14a3557550d6f5d4996c6a259a519f88, type: 3}
+--- !u!1 &1245296087 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1745239697540567484, guid: 14a3557550d6f5d4996c6a259a519f88, type: 3}
+  m_PrefabInstance: {fileID: 1245296086}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1245296088
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1245296087}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d2dc28a67592a446b0d4586cc85d9f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
+  hostButton: {fileID: 1257983307}
+  clientButton: {fileID: 1257983306}
+  serverButton: {fileID: 1257983308}
 --- !u!1001 &1257983305
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -932,6 +964,39 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0b8a32954a00b5c42a7b8a7c691833af, type: 3}
+--- !u!114 &1257983306 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7584170480298631294, guid: 0b8a32954a00b5c42a7b8a7c691833af, type: 3}
+  m_PrefabInstance: {fileID: 1257983305}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &1257983307 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7790024120098127342, guid: 0b8a32954a00b5c42a7b8a7c691833af, type: 3}
+  m_PrefabInstance: {fileID: 1257983305}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!114 &1257983308 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2222008981893069993, guid: 0b8a32954a00b5c42a7b8a7c691833af, type: 3}
+  m_PrefabInstance: {fileID: 1257983305}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &1347676502
 GameObject:
   m_ObjectHideFlags: 0
