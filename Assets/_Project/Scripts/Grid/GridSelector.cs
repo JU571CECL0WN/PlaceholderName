@@ -3,16 +3,23 @@ using UnityEngine.InputSystem;
 
 public class GridSelector : MonoBehaviour
 {
-    public GridManager grid;
-    public Transform highlight;
+    [SerializeField] private GridManager grid;
+    [SerializeField] private GameObject highlightPrefab;
 
-    void Start()
+    private Transform highlight;
+
+    public void Initialize(GridManager gridManager)
     {
+        grid = gridManager;
+        highlight = Instantiate(highlightPrefab).transform;
         highlight.gameObject.SetActive(false);
     }
 
     void Update()
     {
+        if (highlight == null || grid == null)
+            return;
+
         if (Mouse.current == null || !Application.isFocused)
         {
             highlight.gameObject.SetActive(false);
