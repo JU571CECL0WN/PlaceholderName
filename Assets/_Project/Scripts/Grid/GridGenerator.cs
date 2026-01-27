@@ -47,10 +47,16 @@ public class GridGenerator : MonoBehaviour{
 
     const int CORRIDOR_WIDTH = 2;
 
-    void Start()
+    public void Initialize(Tilemap floor, Tilemap walls, Tilemap doors) {
+        floorTilemap = floor;
+        wallTilemap = walls;
+        doorTilemap = doors;
+    }
+
+    public void Generate()
     {
-        // roomProvider = new RandomRoomProvider();
         roomProvider = CreateRoomProvider();
+
         int totalSize = FLOOR_SIZE + WALL_THICKNESS * 2;
         int[,] map = new int[totalSize, totalSize];
 

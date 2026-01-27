@@ -6,11 +6,14 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/_Project/Scenes/SampleRoomGenerating.unity
-    guid: ab8c59159425a4f64b3736df5b09b72a
+    path: Assets/_Project/Scenes/PrefabCleanOnWork.unity
+    guid: 3e113f47c295845d1a0f97f2c6cbdc6d
   - enabled: 1
-    path: Assets/_Project/Scenes/Test1.unity
-    guid: 9bc939a4de97747abbfefec98ad91d6e
+    path: Assets/_Project/Scenes/V0.unity
+    guid: f1b35596f4eda417c8599aea5d3a9684
+  - enabled: 1
+    path: Assets/_Project/Scenes/V1.unity
+    guid: a65a2ce4512344395bc83ebda6a9e7ba
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
