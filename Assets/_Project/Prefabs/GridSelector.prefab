@@ -44,5 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d74fb4d5f6e624a09bd848b3f03cd547, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridSelector
-  grid: {fileID: 0}
-  highlightPrefab: {fileID: 1314905745738079658, guid: 55d576a775d6f42939220a25b1595918, type: 3}
+  grid: {fileID: 5832707733858179051, guid: 8e87796f4f732467086ae8aee2b75725, type: 3}
+  highlightPrefab: {fileID: 214441415189594288, guid: 54f07afa677c74cf39dfef464573d352, type: 3}
