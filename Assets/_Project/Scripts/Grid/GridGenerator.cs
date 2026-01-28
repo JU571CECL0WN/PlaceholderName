@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
 enum WallSide
 {
@@ -30,13 +29,9 @@ public class GridGenerator : MonoBehaviour{
 
     public RoomProviderType roomProviderType;
 
-    public Tilemap floorTilemap;
-    public Tilemap wallTilemap;
-    public Tilemap doorTilemap;
+    // TODO: No seria mala idea hacer esto configurable desde unity, osea hacerlo serializable
 
-    public TileBase floorTile;
-    public TileBase wallTile;
-    public TileBase doorTile;
+    int nextRoomId = 0;
 
     const int FLOOR_SIZE = 32;
     const int WALL_THICKNESS = 2;
@@ -47,25 +42,20 @@ public class GridGenerator : MonoBehaviour{
 
     const int CORRIDOR_WIDTH = 2;
 
-    public void Initialize(Tilemap floor, Tilemap walls, Tilemap doors) {
-        floorTilemap = floor;
-        wallTilemap = walls;
-        doorTilemap = doors;
-    }
-
-    public void Generate()
-    {
+    public CellData[,] Generate(){
         roomProvider = CreateRoomProvider();
+        nextRoomId = 0;
 
         int totalSize = FLOOR_SIZE + WALL_THICKNESS * 2;
-        int[,] map = new int[totalSize, totalSize];
+        CellData[,] map = new CellData[totalSize, totalSize];
 
         GenerateMapData(map);
         GenerateRooms(map);
-        PaintMap(map);
+
+        return map;
     }
 
-    void GenerateMapData(int[,] map)
+    void GenerateMapData(CellData[,] map)
     {
         int size = map.GetLength(0);
 
@@ -79,29 +69,35 @@ public class GridGenerator : MonoBehaviour{
                     y < WALL_THICKNESS ||
                     y >= size - WALL_THICKNESS;
 
-                map[y, x] = isWall ? 2 : 1;
+                map[y, x] = new CellData { type = isWall ? CellType.Wall : CellType.Floor 
+                , roomId = -1};
             }
         }
     }
 
-    bool CanPlaceRoom(int[,] map, int startX, int startY)
+    bool CanPlaceRoom(CellData[,] map, int startX, int startY)
     {
         int roomTotalSize = ROOM_SIZE + ROOM_WALL_THICKNESS * 2;
         int checkSize = roomTotalSize + CORRIDOR_WIDTH;
+
+        int size = map.GetLength(0);
+        if (startX + checkSize >= size || startY + checkSize >= size)
+            return false;
 
         for (int y = 0; y < checkSize; y++)
         {
             for (int x = 0; x < checkSize; x++)
             {
-                if (map[startY + y, startX + x] != 1)
+                if (map[startY + y, startX + x].type != CellType.Floor)
                     return false;
             }
         }
+
         return true;
     }
 
 
-    void PlaceRoom(int[,] map, int startX, int startY)
+    void PlaceRoom(CellData[,] map, int startX, int startY, int roomId)
     {
         int roomTotalSize = ROOM_SIZE + ROOM_WALL_THICKNESS * 2;
 
@@ -114,12 +110,15 @@ public class GridGenerator : MonoBehaviour{
                     x == roomTotalSize - 1 ||
                     y == roomTotalSize - 1;
 
-                map[startY + y, startX + x] = isWall ? 4 : 3;
+                map[startY + y, startX + x] = new CellData {
+                    type = isWall ? CellType.RoomWall : CellType.RoomFloor
+                    , roomId = roomId
+                    };
             }
         }
     }
 
-    void PlaceDoorway(int[,] map, int startX, int startY)
+    void PlaceDoorway(CellData[,] map, int startX, int startY, int roomId)
     {
         int roomTotalSize = ROOM_SIZE + ROOM_WALL_THICKNESS * 2;
 
@@ -157,10 +156,13 @@ public class GridGenerator : MonoBehaviour{
         int mapX = startX + localX;
         int mapY = startY + localY;
 
-        map[mapY, mapX] = 5; // DOOR
+        map[mapY, mapX] = new CellData { 
+            type = CellType.Door 
+            , roomId = roomId
+            };
     }
 
-    void GenerateRooms(int[,] map)
+    void GenerateRooms(CellData[,] map)
     {
         var positions = roomProvider.GetRoomPositions(
             map.GetLength(0),
@@ -174,38 +176,10 @@ public class GridGenerator : MonoBehaviour{
         {
             if (CanPlaceRoom(map, p.x, p.y))
             {
-                PlaceRoom(map, p.x, p.y);
-                PlaceDoorway(map, p.x, p.y);
-            }
-        }
-    }
+                int roomId = nextRoomId++;
 
-    void PaintMap(int[,] map)
-    {
-        floorTilemap.ClearAllTiles();
-        wallTilemap.ClearAllTiles();
-        doorTilemap.ClearAllTiles();
-        for (int y = 0; y < map.GetLength(0); y++)
-        {
-            for (int x = 0; x < map.GetLength(1); x++)
-            {
-                int offset = map.GetLength(0) / 2;
-                Vector3Int pos = new Vector3Int(x - offset, offset - y, 0);
-                
-                if (map[y, x] == 1)
-                    floorTilemap.SetTile(pos, floorTile);
-
-                else if (map[y, x] == 2)
-                    wallTilemap.SetTile(pos, wallTile);
-
-                else if (map[y, x] == 3)
-                    floorTilemap.SetTile(pos, floorTile);
-
-                else if (map[y, x] == 4)
-                    wallTilemap.SetTile(pos, wallTile);
-
-                else if (map[y, x] == 5)
-                    doorTilemap.SetTile(pos, doorTile);
+                PlaceRoom(map, p.x, p.y, roomId);
+                PlaceDoorway(map, p.x, p.y, roomId);
             }
         }
     }
