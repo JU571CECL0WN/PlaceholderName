@@ -175,7 +175,8 @@ public class GridManager : NetworkBehaviour
 
     public bool TryClaimRoom(int roomId, ulong clientId)
     {
-        RoomData room = rooms[roomId];
+        if (!rooms.TryGetValue(roomId, out var room))
+            return false;
 
         if (room.ownerClientId != ulong.MaxValue)
             return room.ownerClientId == clientId;
