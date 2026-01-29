@@ -14,6 +14,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
         hostButton.onClick.AddListener(() =>
         {
             NetworkManager.Singleton.StartHost();
+            
         });
         clientButton.onClick.AddListener(() =>
         {

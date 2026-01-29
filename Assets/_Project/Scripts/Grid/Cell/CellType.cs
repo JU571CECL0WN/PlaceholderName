@@ -7,5 +7,6 @@ public enum CellType
     Wall = 2,
     RoomFloor = 3,
     RoomWall = 4,
-    Door = 5
+    Door = 5,
+    MainGenerator = 6
 }
