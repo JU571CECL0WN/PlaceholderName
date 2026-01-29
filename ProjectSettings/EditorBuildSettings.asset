@@ -8,6 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Project/Scenes/OlderVersions/V0.001.unity
     guid: c2f207ae52ad047248b0d63de00b78d6
+  - enabled: 1
+    path: Assets/_Project/Scenes/BasicBedAdded.unity
+    guid: 524de339351944673abc54d85281bbd2
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
