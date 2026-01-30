@@ -29,11 +29,14 @@ public class PlayerMovement : NetworkBehaviour
     {
         if (!IsOwner) return;
         moveInput = value.Get<Vector2>();
+        
+
     }
 
     void FixedUpdate()
     {
         if (!IsOwner) return; 
         rb.linearVelocity = moveInput * speed;
+
     }
 }

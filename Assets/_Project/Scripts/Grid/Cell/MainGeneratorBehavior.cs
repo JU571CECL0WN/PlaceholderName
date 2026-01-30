@@ -17,6 +17,7 @@ public class MainGeneratorBehavior : NetworkBehaviour
     public bool IsOwnedBy(ulong clientId)
     {
         return ownerClientId.Value == clientId;
+        
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -55,6 +56,8 @@ public class MainGeneratorBehavior : NetworkBehaviour
         return success;
     }
 
+
+    
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
     public void ClaimRoomServerRpc(ulong clientId)
     {
