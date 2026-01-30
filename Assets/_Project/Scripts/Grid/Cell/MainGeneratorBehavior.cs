@@ -24,42 +24,41 @@ public class MainGeneratorBehavior : NetworkBehaviour
         if (!IsServer) return; // Only the server handles claiming
 
         var player = other.GetComponent<PlayerState>();
+
         if (player == null) return;
 
-        if (player.OwnedRoomId.Value != -1)
-            return; // Player already owns a room
-
-        bool success = TryClaimRoom(player.OwnerClientId);
-        if (success)
+        // Try to claim the room if the player doesn't own any room
+        if (player.OwnedRoomId.Value == -1)
         {
-            player.OwnedRoomId.Value = roomId;
-            Debug.Log($"Room {roomId} successfully claimed by client {player.OwnerClientId}");
+            bool success = TryClaimRoom(player.OwnerClientId);
+            if (success)
+            {
+                player.OwnedRoomId.Value = roomId;
+                Debug.Log($"Room {roomId} successfully claimed by client {player.OwnerClientId}");
+            }
+            else
+                Debug.Log($"Room {roomId} claim by client {player.OwnerClientId} failed");
         }
-        else
+
+        // If the player owns this room, let them sleep
+        if (player.OwnerClientId == ownerClientId.Value)
         {
-            Debug.Log($"Room {roomId} claim by client {player.OwnerClientId} failed");
+            player.SleepAt(transform.position);
+            Debug.Log($"Player {player.OwnedRoomId.Value} sleeping in room {roomId}");
         }
     }
 
-    bool TryClaimRoom(ulong clientId)
+    bool TryClaimRoom(ulong playerId)
     {
         var grid = Object.FindFirstObjectByType<GridManager>();
         if (grid == null) return false;
 
-        bool success = grid.TryClaimRoom(roomId, clientId);
+        bool success = grid.TryClaimRoom(roomId, playerId);
 
         if (success)
         {
-            ownerClientId.Value = clientId;
+            ownerClientId.Value = playerId;
         }
         return success;
-    }
-
-    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void ClaimRoomServerRpc(ulong clientId)
-    {
-        if (HasOwner) return;
-
-        ownerClientId.Value = clientId;
     }
 }

@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 13966, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: V0.001
+  m_Name: BedAndCurrency
   m_EditorClassIdentifier: UnityEditor.dll::UnityEditor.SceneTemplate.SceneTemplateAsset
-  templateScene: {fileID: 102900000, guid: c2f207ae52ad047248b0d63de00b78d6, type: 3}
+  templateScene: {fileID: 102900000, guid: 3e355931bc5e5452fa4eddf4ceb7ec6c, type: 3}
   templateName: 
   description: 
   preview: {fileID: 0}
