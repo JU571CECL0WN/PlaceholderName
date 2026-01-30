@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using Unity.Netcode;
 
-public class GridManager : NetworkBehaviour
+public class GridManager : UpgradableBehavior
 {
     [Header("Grid")]
     [SerializeField] float cellSize = 1f;
@@ -19,6 +19,7 @@ public class GridManager : NetworkBehaviour
     [SerializeField] TileBase doorTile;
 
     [SerializeField] GameObject mainGeneratorPrefab;
+    [SerializeField] GameObject doorPrefab;
 
     CellData[,] map;
     Dictionary<int, RoomData> rooms = new();
@@ -88,7 +89,7 @@ public class GridManager : NetworkBehaviour
         );
     }
     
-    bool generatorsSpawned = false;
+    bool specialCellsSpawned = false;
 
     public override void OnNetworkSpawn()
     {
@@ -101,10 +102,10 @@ public class GridManager : NetworkBehaviour
             return;
         }
 
-        if (generatorsSpawned) return;
+        if (specialCellsSpawned) return;
 
-        SpawnMainGenerators();
-        generatorsSpawned = true;
+        SpawnSpecialCells();
+        specialCellsSpawned = true;
     }
 
     //============================================
@@ -142,7 +143,7 @@ public class GridManager : NetworkBehaviour
         }
     }
 
-    void SpawnMainGenerators()
+    void SpawnSpecialCells()
     {
         if (!NetworkManager.Singleton.IsServer)
         {
@@ -153,24 +154,32 @@ public class GridManager : NetworkBehaviour
         int sizeY = map.GetLength(0);
         int sizeX = map.GetLength(1);
 
-        int count = 0;
-
         for (int y = 0; y < sizeY; y++)
         for (int x = 0; x < sizeX; x++)
         {
-            if (map[y, x].type == CellType.MainGenerator)
-            count++;
+            
+            CellData cell = map[y, x];  
 
-            if (map[y, x].type != CellType.MainGenerator)
+
+            if (cell.type != CellType.MainGenerator || cell.type != CellType.Door)
                 continue;
 
             Vector3 worldPos = CellToWorld(new Vector2Int(x, y));
-            
-            var gen = Instantiate(mainGeneratorPrefab, worldPos, Quaternion.identity);
 
-            gen.GetComponent<MainGeneratorBehavior>().roomId = map[y, x].roomId;
-            gen.GetComponent<NetworkObject>().Spawn();
-        }
+            if (cell.type == CellType.MainGenerator)
+            {
+                var gen = Instantiate(mainGeneratorPrefab, worldPos, Quaternion.identity);
+
+                gen.GetComponent<MainGeneratorBehavior>().roomId = cell.roomId;
+                gen.GetComponent<NetworkObject>().Spawn();
+            }
+            else if (cell.type == CellType.Door)
+            {
+                var door = Instantiate(doorPrefab, worldPos, Quaternion.identity);
+                door.GetComponent<DoorBehavior>().roomId = cell.roomId;
+                door.GetComponent<NetworkObject>().Spawn();
+                }
+            }
     }
 
     public bool TryClaimRoom(int roomId, ulong clientId)

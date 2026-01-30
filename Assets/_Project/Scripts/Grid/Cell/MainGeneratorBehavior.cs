@@ -1,24 +1,9 @@
 using UnityEngine;
 using Unity.Netcode;
 
-public class MainGeneratorBehavior : NetworkBehaviour
+public class MainGeneratorBehavior : UpgradableBehavior
 {
-    public int roomId;
-
-    private NetworkVariable<ulong> ownerClientId =
-        new NetworkVariable<ulong>(
-            ulong.MaxValue,
-            NetworkVariableReadPermission.Everyone,
-            NetworkVariableWritePermission.Server
-        );
-
-    public bool HasOwner => ownerClientId.Value != ulong.MaxValue;
-
-    public bool IsOwnedBy(ulong clientId)
-    {
-        return ownerClientId.Value == clientId;
-        
-    }
+    
 
     private void OnTriggerEnter2D(Collider2D other)
     {
