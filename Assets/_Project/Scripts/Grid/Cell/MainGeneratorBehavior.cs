@@ -3,8 +3,6 @@ using Unity.Netcode;
 
 public class MainGeneratorBehavior : UpgradableBehavior
 {
-    
-
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!IsServer) return; // Only the server handles claiming

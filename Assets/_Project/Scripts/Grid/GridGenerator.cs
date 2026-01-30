@@ -181,6 +181,8 @@ public class GridGenerator : MonoBehaviour{
 
     void GenerateRooms(CellData[,] map)
     {
+        
+        
         var positions = roomProvider.GetRoomPositions(
             map.GetLength(0),
             ROOM_COUNT,

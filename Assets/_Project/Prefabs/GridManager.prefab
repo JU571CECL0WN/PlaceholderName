@@ -288,7 +288,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2047258659
+  GlobalObjectIdHash: 3684645561
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -314,6 +314,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridManager
   ShowTopMostFoldoutHeaderGroup: 1
+  roomId: 0
+  ownerClientId:
+    m_InternalValue: 18446744073709551615
   cellSize: 1
   floorTilemap: {fileID: 8998023071871741221}
   wallTilemap: {fileID: 2638148123144626223}
@@ -322,6 +325,7 @@ MonoBehaviour:
   wallTile: {fileID: 11400000, guid: 18a03b09590f24b42853f8e10fc93e2c, type: 2}
   doorTile: {fileID: 11400000, guid: 979692cd5cc0749f08b78a799583ee37, type: 2}
   mainGeneratorPrefab: {fileID: 6808165184521523712, guid: ec33c31aef0f549f18b9a9911c6cca51, type: 3}
+  doorPrefab: {fileID: 3657005255374735651, guid: 0bbd662a2a5adc94eaf56014e5f586ee, type: 3}
 --- !u!1 &2429889014349290999
 GameObject:
   m_ObjectHideFlags: 0

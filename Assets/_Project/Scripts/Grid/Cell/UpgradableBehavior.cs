@@ -1,9 +1,10 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
 public class UpgradableBehavior : NetworkBehaviour
 {
-    public int roomId;
+    public virtual int roomId { get; set; }
 
     public NetworkVariable<ulong> ownerClientId =
         new NetworkVariable<ulong>(

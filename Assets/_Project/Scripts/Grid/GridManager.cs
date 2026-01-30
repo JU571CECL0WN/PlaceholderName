@@ -161,7 +161,7 @@ public class GridManager : UpgradableBehavior
             CellData cell = map[y, x];  
 
 
-            if (cell.type != CellType.MainGenerator || cell.type != CellType.Door)
+            if (cell.type != CellType.MainGenerator && cell.type != CellType.Door)
                 continue;
 
             Vector3 worldPos = CellToWorld(new Vector2Int(x, y));
