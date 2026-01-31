@@ -34,14 +34,7 @@ public class GridManager : NetworkBehaviour
 
     void Start()
     {
-        Debug.Log("GridManager Start");
-    }
-
-    public void SetMap(CellData[,] generatedMap)
-    {
-        map = generatedMap;
-        BuildRooms();
-        PaintMap();
+        Debug.Log("GridManager Start"); 
     }
 
     public CellData GetCell(Vector2Int cell)
@@ -87,29 +80,85 @@ public class GridManager : NetworkBehaviour
             0
         );
     }
-    
-    bool generatorsSpawned = false;
 
     public override void OnNetworkSpawn()
     {
-        Debug.Log("GridManager OnNetworkSpawn");
+        if (IsServer){
+            var generator = Object.FindFirstObjectByType<GridGenerator>();
+            Debug.Log("GridManager OnNetworkSpawn found generator: " + (generator != null));
+            CellData[,] generatedMap = generator.Generate();
 
-        if (!IsServer) return;
-        if (map == null)
+            map = generatedMap;
+            BuildRooms();
+            SpawnMainGenerators();
+
+            PaintMap();
+            }
+
+        if (!IsServer)
         {
-            Debug.Log("Map is null, cannot spawn generators");
-            return;
+            RequestMapServerRpc(); // Request map from server on client connect
         }
 
-        if (generatorsSpawned) return;
-
-        SpawnMainGenerators();
-        generatorsSpawned = true;
     }
 
     //============================================
     // Private Methods
     //============================================
+
+    CellDataNet[] SerializeMap(CellData[,] map)
+    {
+        int height = map.GetLength(0);
+        int width = map.GetLength(1);
+
+        CellDataNet[] data = new CellDataNet[height * width + 2];
+
+        data[0] = new CellDataNet { roomId = height };
+        data[1] = new CellDataNet { roomId = width };
+
+        int i = 2;
+
+        for (int y = 0; y < height; y++)
+        for (int x = 0; x < width; x++)
+        {
+            data[i++] = new CellDataNet
+            {
+                type = (byte)map[y, x].type,
+                roomId = map[y, x].roomId
+            };
+        }
+
+        return data;
+    }
+
+    CellData[,] DeserializeMap(CellDataNet[] data)
+    {
+        int height = data[0].roomId;
+        int width = data[1].roomId;
+
+        CellData[,] map = new CellData[height, width];
+
+        int i = 2;
+
+        for (int y = 0; y < height; y++)
+        for (int x = 0; x < width; x++)
+        {
+            map[y, x] = new CellData
+            {
+                type = (CellType)data[i].type,
+                roomId = data[i].roomId
+            };
+            i++;
+        }
+
+        return map;
+    }
+
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    void RequestMapServerRpc()
+    {
+        SendMapClientRpc(SerializeMap(map));
+    }
 
 
     void BuildRooms()
@@ -185,8 +234,19 @@ public class GridManager : NetworkBehaviour
         return true;
     }
 
+    [ClientRpc]
+    void SendMapClientRpc(CellDataNet[] data)
+    {
+        if (IsServer) return;
+
+        map = DeserializeMap(data);
+
+        PaintMap();
+    }
+
     void PaintMap()
     {
+        Debug.Log("Painting map");
         floorTilemap.ClearAllTiles();
         wallTilemap.ClearAllTiles();
         doorTilemap.ClearAllTiles();

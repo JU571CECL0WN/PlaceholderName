@@ -1,19 +1,19 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Unity.Netcode;
 
-public class WorldInitializer : MonoBehaviour
+public class WorldInitializer : NetworkBehaviour
 {
     [SerializeField] GridManager gridManagerPrefab;
     [SerializeField] GridGenerator gridGeneratorPrefab;
     [SerializeField] GridSelector gridSelectorPrefab;
 
-    void Start(){
-        var gridManager = Instantiate(gridManagerPrefab);     
-        var generator = Instantiate(gridGeneratorPrefab);
-        var selector = Instantiate(gridSelectorPrefab);
+    public override void OnNetworkSpawn()
+    {
+        if (!IsServer) return;
 
-        CellData[,] map = generator.Generate();
-        gridManager.SetMap(map);
-        selector.Initialize(gridManager);
+        var gridGenerator = Instantiate(gridGeneratorPrefab);
+        var gridManager = Instantiate(gridManagerPrefab);
+        gridManager.GetComponent<NetworkObject>().Spawn();
     }
 }

@@ -18,6 +18,10 @@ public class PlayerState : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
+        Debug.Log(
+            $"[Player] LocalClient={NetworkManager.Singleton.LocalClientId} " +
+            $"OwnerId={OwnerClientId} IsOwner={IsOwner}"
+        );
         if (IsServer)
         {
             isSleeping.OnValueChanged += OnSleepingChanged;

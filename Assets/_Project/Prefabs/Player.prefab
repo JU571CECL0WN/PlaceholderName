@@ -259,6 +259,7 @@ MonoBehaviour:
     m_InternalValue: -1
   isSleeping:
     m_InternalValue: 0
+  moneyPerTick: 1
 --- !u!114 &6621014610307965153
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -283,7 +284,7 @@ MonoBehaviour:
   RotationMaxInterpolationTime: 0.1
   ScaleLerpSmoothing: 1
   ScaleMaxInterpolationTime: 0.1
-  AuthorityMode: 0
+  AuthorityMode: 1
   TickSyncChildren: 0
   UseUnreliableDeltas: 0
   SyncPositionX: 1

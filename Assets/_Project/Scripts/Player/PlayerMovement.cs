@@ -27,7 +27,7 @@ public class PlayerMovement : NetworkBehaviour
 
     void OnMove(InputValue value)
     {
-        if (!IsOwner) return;
+        if (!IsOwner)return;
         moveInput = value.Get<Vector2>();
     }
 
