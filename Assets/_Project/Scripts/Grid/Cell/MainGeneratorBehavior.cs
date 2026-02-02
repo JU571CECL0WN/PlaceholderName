@@ -3,7 +3,12 @@ using Unity.Netcode;
 
 public class MainGeneratorBehavior : NetworkBehaviour
 {
-    public int roomId;
+    public NetworkVariable<int> roomId =
+        new NetworkVariable<int>(
+            -1,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Server
+        );
 
     private NetworkVariable<ulong> ownerClientId =
         new NetworkVariable<ulong>(
@@ -21,44 +26,38 @@ public class MainGeneratorBehavior : NetworkBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!IsServer) return; // Only the server handles claiming
+        if (!other.TryGetComponent<PlayerState>(out var player)) return;
 
-        var player = other.GetComponent<PlayerState>();
+        if (!player.IsOwner) return;
 
-        if (player == null) return;
-
-        // Try to claim the room if the player doesn't own any room
-        if (player.OwnedRoomId.Value == -1)
-        {
-            bool success = TryClaimRoom(player.OwnerClientId);
-            if (success)
-            {
-                player.OwnedRoomId.Value = roomId;
-                Debug.Log($"Room {roomId} successfully claimed by client {player.OwnerClientId}");
-            }
-            else
-                Debug.Log($"Room {roomId} claim by client {player.OwnerClientId} failed");
-        }
-
-        // If the player owns this room, let them sleep
-        if (player.OwnerClientId == ownerClientId.Value)
-        {
-            player.SleepAt(transform.position);
-            Debug.Log($"Player {player.OwnedRoomId.Value} sleeping in room {roomId}");
-        }
+        player.RequestGeneratorClaimServerRpc(NetworkObjectId);
     }
 
-    bool TryClaimRoom(ulong playerId)
+    public void TryClaimGenerator(ulong clientId, PlayerState player)
     {
+        if (!IsServer) return;
+
+        if (ownerClientId.Value != ulong.MaxValue &&
+            ownerClientId.Value != clientId)
+            return;
+
         var grid = Object.FindFirstObjectByType<GridManager>();
-        if (grid == null) return false;
+        if (grid == null) return;
 
-        bool success = grid.TryClaimRoom(roomId, playerId);
+        if (!grid.TryClaimRoom(roomId.Value, clientId))
+            return;
 
-        if (success)
-        {
-            ownerClientId.Value = playerId;
-        }
-        return success;
+        ownerClientId.Value = clientId;
+        
+        player.ConfirmSleepClientRpc(
+            transform.position,
+            new ClientRpcParams {
+                Send = new ClientRpcSendParams {
+                    TargetClientIds = new[] { clientId }
+                }
+            }
+        );
+
+        player.SetSleepingServer(true);
     }
 }

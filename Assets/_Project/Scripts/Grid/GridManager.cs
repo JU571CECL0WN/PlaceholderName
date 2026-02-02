@@ -85,7 +85,6 @@ public class GridManager : NetworkBehaviour
     {
         if (IsServer){
             var generator = Object.FindFirstObjectByType<GridGenerator>();
-            Debug.Log("GridManager OnNetworkSpawn found generator: " + (generator != null));
             CellData[,] generatedMap = generator.Generate();
 
             map = generatedMap;
@@ -193,11 +192,7 @@ public class GridManager : NetworkBehaviour
 
     void SpawnMainGenerators()
     {
-        if (!NetworkManager.Singleton.IsServer)
-        {
-            Debug.Log("Not server, not spawning generators");
-            return;
-        }
+        if (!NetworkManager.Singleton.IsServer) return;
 
         int sizeY = map.GetLength(0);
         int sizeX = map.GetLength(1);
@@ -216,9 +211,10 @@ public class GridManager : NetworkBehaviour
             Vector3 worldPos = CellToWorld(new Vector2Int(x, y));
             
             var gen = Instantiate(mainGeneratorPrefab, worldPos, Quaternion.identity);
+            var netObj = gen.GetComponent<NetworkObject>();
+            netObj.Spawn();
 
-            gen.GetComponent<MainGeneratorBehavior>().roomId = map[y, x].roomId;
-            gen.GetComponent<NetworkObject>().Spawn();
+            gen.GetComponent<MainGeneratorBehavior>().roomId.Value = map[y, x].roomId;
         }
     }
 
@@ -246,7 +242,6 @@ public class GridManager : NetworkBehaviour
 
     void PaintMap()
     {
-        Debug.Log("Painting map");
         floorTilemap.ClearAllTiles();
         wallTilemap.ClearAllTiles();
         doorTilemap.ClearAllTiles();

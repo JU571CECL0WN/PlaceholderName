@@ -18,10 +18,6 @@ public class PlayerState : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        Debug.Log(
-            $"[Player] LocalClient={NetworkManager.Singleton.LocalClientId} " +
-            $"OwnerId={OwnerClientId} IsOwner={IsOwner}"
-        );
         if (IsServer)
         {
             isSleeping.OnValueChanged += OnSleepingChanged;
@@ -36,18 +32,6 @@ public class PlayerState : NetworkBehaviour
         }
     }
 
-    public void SleepAt(Vector3 position)
-    {
-        if (!IsServer) return;
-
-        isSleeping.Value = true;
-
-        transform.position = position;
-
-        var rb = GetComponent<Rigidbody2D>();
-        if (rb != null)
-            rb.linearVelocity = Vector2.zero;
-    }
 
     private void OnSleepingChanged(bool oldValue, bool newValue)
     {
@@ -67,6 +51,45 @@ public class PlayerState : NetworkBehaviour
         }
     }
 
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void RequestGeneratorClaimServerRpc(ulong generatorNetId)
+    {
+        if (isSleeping.Value) return;
+
+        var gen = NetworkManager.Singleton.SpawnManager
+            .SpawnedObjects[generatorNetId]
+            .GetComponent<MainGeneratorBehavior>();
+
+        if (gen == null) return;
+
+        gen.TryClaimGenerator(OwnerClientId, this);
+    }
+
+    [ClientRpc]
+    public void ConfirmSleepClientRpc(
+        Vector3 bedPosition,
+        ClientRpcParams rpcParams = default
+    )
+    {
+        if (!IsOwner) return;
+
+        transform.position = bedPosition;
+
+        var rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+    }
+
+    public void SetSleepingServer(bool sleeping)
+    {
+        if (!IsServer) return;
+
+        isSleeping.Value = sleeping;
+    }
+
     [Rpc(SendTo.Server)]
     public void RequestWakeUpServerRpc()
     {
@@ -79,7 +102,29 @@ public class PlayerState : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        isSleeping.Value = false;
+        ConfirmWakeUpClientRpc(
+        new ClientRpcParams {
+            Send = new ClientRpcSendParams {
+                TargetClientIds = new[] { OwnerClientId }
+            }
+        }
+    );
+
+        SetSleepingServer(false);
+    }
+
+    [ClientRpc]
+    public void ConfirmWakeUpClientRpc(ClientRpcParams rpcParams = default)
+    {
+        if (!IsOwner) return;
+
+        var rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.simulated = true;
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
     }
 
     private IEnumerator SleepTick()
