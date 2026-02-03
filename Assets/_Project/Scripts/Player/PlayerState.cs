@@ -16,6 +16,13 @@ public class PlayerState : NetworkBehaviour
     [SerializeField] private int moneyPerTick = 1;
 
 
+    public void SetOwnedRoomServer(int roomId)
+    {
+        if (!IsServer) return;
+        OwnedRoomId.Value = roomId;
+    }
+
+
     public override void OnNetworkSpawn()
     {
         if (IsServer)
@@ -72,7 +79,7 @@ public class PlayerState : NetworkBehaviour
     )
     {
         if (!IsOwner) return;
-
+        
         transform.position = bedPosition;
 
         var rb = GetComponent<Rigidbody2D>();
