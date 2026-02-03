@@ -14,15 +14,17 @@ public class NewMonoBehaviourScript : MonoBehaviour
         hostButton.onClick.AddListener(() =>
         {
             NetworkManager.Singleton.StartHost();
-            
+            CanvasManager.Instance.StartGame();
         });
         clientButton.onClick.AddListener(() =>
         {
             NetworkManager.Singleton.StartClient();
+            CanvasManager.Instance.StartGame();
         });
         serverButton.onClick.AddListener(() =>
         {
             NetworkManager.Singleton.StartServer();
+            CanvasManager.Instance.StartGame();
         });
     }
 

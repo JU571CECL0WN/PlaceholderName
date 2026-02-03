@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/_Project/Scenes/SyncMap.unity
-    guid: 6e76cee33f34845b7b8a92ec3f95e4d6
+    path: Assets/_Project/Scenes/CanvasUpdate.unity
+    guid: 9538c20f3223441d69bf51fc3b9f8ba0
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

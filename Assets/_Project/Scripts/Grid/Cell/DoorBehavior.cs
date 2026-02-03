@@ -34,7 +34,6 @@ public class DoorBehavior : BreakableBehavior
 
     public void HandleTriggerEnter(Collider2D collider)
     {
-        Debug.Log("Collision Enter Door");
         if (!collider.TryGetComponent<PlayerState>(out var player))
             return;
 
@@ -50,7 +49,6 @@ public class DoorBehavior : BreakableBehavior
 
     public void HandleTriggerExit(Collider2D collider)
     {
-        Debug.Log("Collision Exit Door");
         if (!collider.TryGetComponent<PlayerState>(out var player))
             return;
 
@@ -63,7 +61,6 @@ public class DoorBehavior : BreakableBehavior
 
     private bool ShouldIgnorePlayer(PlayerState player)
     {
-        Debug.Log($"Door owned by {ownerClientId}, player owned room {player.OwnedRoomId.Value}, door room {roomId.Value}");
         return
         player.OwnedRoomId.Value == -1 ||
         player.OwnedRoomId.Value == roomId.Value;
