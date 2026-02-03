@@ -730,6 +730,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: GridManager
       objectReference: {fileID: 0}
+    - target: {fileID: 8375155021741598309, guid: 8e87796f4f732467086ae8aee2b75725, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 1440154470
+      objectReference: {fileID: 0}
+    - target: {fileID: 8375155021741598309, guid: 8e87796f4f732467086ae8aee2b75725, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8375155021741598309, guid: 8e87796f4f732467086ae8aee2b75725, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 3684645561
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

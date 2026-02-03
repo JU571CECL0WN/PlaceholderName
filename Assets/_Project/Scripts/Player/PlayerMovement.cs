@@ -27,13 +27,38 @@ public class PlayerMovement : NetworkBehaviour
 
     void OnMove(InputValue value)
     {
-        if (!IsOwner) return;
+        if (!IsOwner)return;
         moveInput = value.Get<Vector2>();
+        
+
     }
 
     void FixedUpdate()
     {
         if (!IsOwner) return; 
+
+        if (GetComponent<PlayerState>().isSleeping.Value)
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         rb.linearVelocity = moveInput * speed;
+
+    }
+
+    void OnAction()
+    {
+        if (!IsOwner) return;
+
+        var state = GetComponent<PlayerState>();
+        if (state.isSleeping.Value)
+        {
+            state.RequestWakeUpServerRpc();
+            return;
+        }
+
+        return;
+
     }
 }

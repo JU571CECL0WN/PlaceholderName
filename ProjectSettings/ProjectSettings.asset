@@ -688,8 +688,8 @@ PlayerSettings:
   cloudProjectId: c0f631b4-ca1b-428b-a236-16ee7c8eedbe
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: PlaceholderName
-  organizationId: mywyn
+  projectName: My project (1)
+  organizationId: dehydratedliquidwater
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

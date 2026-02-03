@@ -162,8 +162,27 @@ public class GridGenerator : MonoBehaviour{
             };
     }
 
+    void PlaceMainGenerator(CellData[,] map, int startX, int startY, int roomId)
+    {
+        int roomTotalSize = ROOM_SIZE + ROOM_WALL_THICKNESS * 2;
+
+        int min = 1;
+        int max = roomTotalSize - 3;
+
+        int localX = Random.Range(min, max + 1);
+        int localY = Random.Range(min, max + 1);
+
+        map[startY + localY, startX + localX] = new CellData
+        {
+            type = CellType.MainGenerator, // o Bed
+            roomId = roomId
+        };
+    }
+
     void GenerateRooms(CellData[,] map)
     {
+        
+        
         var positions = roomProvider.GetRoomPositions(
             map.GetLength(0),
             ROOM_COUNT,
@@ -180,6 +199,7 @@ public class GridGenerator : MonoBehaviour{
 
                 PlaceRoom(map, p.x, p.y, roomId);
                 PlaceDoorway(map, p.x, p.y, roomId);
+                PlaceMainGenerator(map, p.x, p.y, roomId);
             }
         }
     }
