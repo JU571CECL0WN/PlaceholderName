@@ -3,6 +3,9 @@ using Unity.Netcode;
 
 public class MainGeneratorBehavior : UpgradableBehavior
 {
+
+    private NetworkVariable<int> moneyPerTick = new NetworkVariable<int>(1);
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.TryGetComponent<PlayerState>(out var player)) return;
@@ -34,7 +37,7 @@ public class MainGeneratorBehavior : UpgradableBehavior
                 }
             }
         );
-
+        player.setActiveIncome(moneyPerTick.Value);
         player.SetSleepingServer(true);
     }
 }

@@ -4,7 +4,11 @@ using System.Collections;
 
 public class PlayerState : NetworkBehaviour
 {
-    public NetworkVariable<int> money = new(0);
+    public NetworkVariable<int> money = new(
+        0,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
 
     // roomId en la que está el player (-1 = ninguna)
     public NetworkVariable<int> OwnedRoomId = new NetworkVariable<int>(-1);
@@ -13,7 +17,9 @@ public class PlayerState : NetworkBehaviour
 
     private Coroutine sleepCoroutine;
 
-    [SerializeField] private int moneyPerTick = 1;
+    [SerializeField] private int moneyPerTickWhileAsleep = 0;
+    [SerializeField] private int passiveMoneyPerTick = 0;
+    
 
 
     public void SetOwnedRoomServer(int roomId)
@@ -25,36 +31,20 @@ public class PlayerState : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (IsServer)
-        {
-            isSleeping.OnValueChanged += OnSleepingChanged;
-        }
+        if (!IsServer) return;
+
+        money.Value = 0; // Por si acaso xD
+        sleepCoroutine = StartCoroutine(MoneyTick());
     }
 
     public override void OnNetworkDespawn()
     {
-        if (IsServer)
-        {
-            isSleeping.OnValueChanged -= OnSleepingChanged;
-        }
-    }
-
-
-    private void OnSleepingChanged(bool oldValue, bool newValue)
-    {
         if (!IsServer) return;
 
-        if (newValue)
+        if (sleepCoroutine != null)
         {
-            sleepCoroutine = StartCoroutine(SleepTick());
-        }
-        else
-        {
-            if (sleepCoroutine != null)
-            {
-                StopCoroutine(sleepCoroutine);
-                sleepCoroutine = null;
-            }
+            StopCoroutine(sleepCoroutine);
+            sleepCoroutine = null;
         }
     }
 
@@ -134,13 +124,32 @@ public class PlayerState : NetworkBehaviour
         }
     }
 
-    private IEnumerator SleepTick()
+    private IEnumerator MoneyTick()
     {
-        while (isSleeping.Value)
+        while (true)
         {
-            money.Value += moneyPerTick;
+            money.Value += passiveMoneyPerTick;
+
+            if (isSleeping.Value)
+            {
+                money.Value += moneyPerTickWhileAsleep;
+            }
 
             yield return new WaitForSeconds(1f);
         }
+    }
+
+    public void addPassiveIncome(int amount)
+    {
+        if (!IsServer) return;
+
+        passiveMoneyPerTick += amount;
+    }
+
+    public void setActiveIncome(int amount)
+    {
+        if (!IsServer) return;
+
+        moneyPerTickWhileAsleep = amount;
     }
 }
