@@ -1,29 +1,34 @@
 using UnityEngine;
 using TMPro;
 using Unity.Netcode;
+using System.Collections;
 
 public class CurrencyUI : MonoBehaviour
 {
     [SerializeField] private TMP_Text moneyText;
-
     private PlayerState localPlayer;
 
     private void Start()
     {
-        FindLocalPlayer();
+        StartCoroutine(WaitForLocalPlayer());
     }
 
-    private void FindLocalPlayer()
+    private IEnumerator WaitForLocalPlayer()
     {
-        foreach (var player in FindObjectsByType<PlayerState>(FindObjectsSortMode.None))
+        while (localPlayer == null)
         {
-            if (player.IsOwner)
+            foreach (var player in FindObjectsByType<PlayerState>(FindObjectsSortMode.None))
             {
-                localPlayer = player;
-                localPlayer.money.OnValueChanged += OnMoneyChanged;
-                UpdateMoney(localPlayer.money.Value);
-                return;
+                if (player.IsOwner)
+                {
+                    localPlayer = player;
+                    localPlayer.money.OnValueChanged += OnMoneyChanged;
+                    UpdateMoney(localPlayer.money.Value);
+                    yield break;
+                }
             }
+
+            yield return null;
         }
     }
 
@@ -40,8 +45,6 @@ public class CurrencyUI : MonoBehaviour
     private void OnDestroy()
     {
         if (localPlayer != null)
-        {
             localPlayer.money.OnValueChanged -= OnMoneyChanged;
-        }
     }
 }
