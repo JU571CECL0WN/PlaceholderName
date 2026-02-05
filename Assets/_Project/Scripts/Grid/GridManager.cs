@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using Unity.Netcode;
 
-public class GridManager : UpgradableBehavior
+public class GridManager : NetworkBehaviour
 {
     [Header("Grid")]
     [SerializeField] float cellSize = 1f;
@@ -319,5 +319,6 @@ public class GridManager : UpgradableBehavior
                 }
             }
         }
-    }
+    } 
+
 }

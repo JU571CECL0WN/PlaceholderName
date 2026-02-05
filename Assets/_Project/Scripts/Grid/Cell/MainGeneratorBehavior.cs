@@ -40,4 +40,15 @@ public class MainGeneratorBehavior : UpgradableBehavior
         player.setActiveIncome(moneyPerTick.Value);
         player.SetSleepingServer(true);
     }
+
+    public override bool TryUpgrade(ulong clientId)
+    {
+        if (!IsServer) return false;
+
+        if (ownerClientId.Value != clientId) return false;
+
+        moneyPerTick.Value += 1;
+
+        return true;
+    }
 }

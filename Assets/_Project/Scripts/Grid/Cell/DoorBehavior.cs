@@ -65,4 +65,15 @@ public class DoorBehavior : BreakableBehavior
         player.OwnedRoomId.Value == -1 ||
         player.OwnedRoomId.Value == roomId.Value;
     }
+
+    public override bool TryUpgrade(ulong clientId)
+    {
+        if (!IsServer) return false;
+
+        if (ownerClientId.Value != clientId) return false;
+
+        hitPoints.Value += 5;
+
+        return true;
+    }
 }

@@ -15,5 +15,7 @@ public class WorldInitializer : NetworkBehaviour
         var gridGenerator = Instantiate(gridGeneratorPrefab);
         var gridManager = Instantiate(gridManagerPrefab);
         gridManager.GetComponent<NetworkObject>().Spawn();
+        var gridSelector = Instantiate(gridSelectorPrefab);
+        gridSelector.Initialize(gridManager);
     }
 }

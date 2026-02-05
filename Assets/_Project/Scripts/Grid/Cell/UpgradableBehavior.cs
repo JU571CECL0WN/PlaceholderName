@@ -2,7 +2,7 @@ using System;
 using Unity.Netcode;
 using UnityEngine;
 
-public class UpgradableBehavior : NetworkBehaviour
+public abstract class UpgradableBehavior : NetworkBehaviour
 {
     public NetworkVariable<int> roomId =
         new NetworkVariable<int>(
@@ -25,5 +25,7 @@ public class UpgradableBehavior : NetworkBehaviour
         return ownerClientId.Value == clientId;
 
     }
+
+    public abstract bool TryUpgrade(ulong clientId);
 
 }

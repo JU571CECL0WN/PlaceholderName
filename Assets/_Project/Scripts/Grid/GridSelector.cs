@@ -34,5 +34,10 @@ public class GridSelector : MonoBehaviour
 
         highlight.gameObject.SetActive(true);
         highlight.position = grid.CellToWorld(cell);
+
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            Debug.Log($"Clicked cell: {cell.x}, {cell.y}, is type: {grid.GetCell(cell)?.type}");
+        }
     }
 }

@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Unity.Netcode;
 
-public class BreakableBehavior : UpgradableBehavior
+public abstract class BreakableBehavior : UpgradableBehavior
 {
     protected NetworkVariable<int> hitPoints =
     new NetworkVariable<int>(
