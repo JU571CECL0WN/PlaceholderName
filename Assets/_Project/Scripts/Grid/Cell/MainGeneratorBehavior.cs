@@ -3,24 +3,50 @@ using Unity.Netcode;
 
 public class MainGeneratorBehavior : UpgradableBehavior
 {
+    // Fuente ÚNICA de income
+    protected NetworkVariable<int> moneyPerTick =
+        new NetworkVariable<int>(
+            1,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Server
+        );
 
-    private NetworkVariable<int> moneyPerTick = new NetworkVariable<int>(1);
+    public override void OnNetworkSpawn()
+    {
+        if (!IsServer) return;
+
+        moneyPerTick.OnValueChanged += (oldValue, newValue) =>
+        {
+            Debug.Log(
+                $"Money per tick changed from {oldValue} to {newValue} on {name}"
+            );
+        };
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.TryGetComponent<PlayerState>(out var player)) return;
-
         if (!player.IsOwner) return;
 
-        player.RequestGeneratorClaimServerRpc(NetworkObjectId);
+        player.RequestGeneratorInteractionServerRpc(NetworkObjectId);
+    }
+
+    public int GetMoneyPerTick()
+    {
+        return moneyPerTick.Value;
     }
 
     public void TryClaimGenerator(ulong clientId, PlayerState player)
     {
         if (!IsServer) return;
 
-        if (ownerClientId.Value != ulong.MaxValue &&
-            ownerClientId.Value != clientId)
+        if (ownerClientId.Value == clientId)
+        {
+            GoToSleep(player);
+            return;
+        }
+
+        if (ownerClientId.Value != ulong.MaxValue)
             return;
 
         var grid = Object.FindFirstObjectByType<GridManager>();
@@ -28,27 +54,41 @@ public class MainGeneratorBehavior : UpgradableBehavior
 
         if (!grid.TryClaimRoom(roomId.Value, clientId))
             return;
-            
+
+        ownerClientId.Value = clientId;
+        player.SetOwnedRoomServer(roomId.Value);
+
+        GoToSleep(player);
+    }
+
+    private void GoToSleep(PlayerState player)
+    {
+        if (!IsServer) return;
+
         player.ConfirmSleepClientRpc(
             transform.position,
-            new ClientRpcParams {
-                Send = new ClientRpcSendParams {
-                    TargetClientIds = new[] { clientId }
+            new ClientRpcParams
+            {
+                Send = new ClientRpcSendParams
+                {
+                    TargetClientIds = new[] { player.OwnerClientId }
                 }
             }
         );
-        player.setActiveIncome(moneyPerTick.Value);
-        player.SetSleepingServer(true);
+
+        player.SetSleepingServer(true, NetworkObjectId);
     }
 
-    public override bool TryUpgrade(ulong clientId)
+    protected override int GetUpgradeCost()
     {
-        if (!IsServer) return false;
+        if (baseUpgradeCost == int.MaxValue)
+            baseUpgradeCost = 10;
 
-        if (ownerClientId.Value != clientId) return false;
+        return baseUpgradeCost * (level.Value + 1);
+    }
 
+    protected override void ApplyUpgrade()
+    {
         moneyPerTick.Value += 1;
-
-        return true;
     }
 }

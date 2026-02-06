@@ -10,12 +10,17 @@ public class WorldInitializer : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (!IsServer) return;
+        if (IsServer){
+            var gridGenerator = Instantiate(gridGeneratorPrefab);
+            var gridManager = Instantiate(gridManagerPrefab);
+            gridManager.GetComponent<NetworkObject>().Spawn();
+        }
 
-        var gridGenerator = Instantiate(gridGeneratorPrefab);
-        var gridManager = Instantiate(gridManagerPrefab);
-        gridManager.GetComponent<NetworkObject>().Spawn();
-        var gridSelector = Instantiate(gridSelectorPrefab);
-        gridSelector.Initialize(gridManager);
+        if (IsClient){
+            var gridSelector = Instantiate(gridSelectorPrefab);
+            var gridManager = Object.FindFirstObjectByType<GridManager>();
+            gridSelector.Initialize(gridManager);
+        }
+
     }
 }

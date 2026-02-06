@@ -37,7 +37,7 @@ public class GridSelector : MonoBehaviour
 
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            Debug.Log($"Clicked cell: {cell.x}, {cell.y}, is type: {grid.GetCell(cell)?.type}");
+            grid.CellClickedServerRpc(cell);
         }
     }
 }

@@ -24,6 +24,9 @@ public class GridManager : NetworkBehaviour
     CellData[,] map;
     Dictionary<int, RoomData> rooms = new();
 
+    Dictionary<Vector2Int, UpgradableBehavior> upgradableCells
+    = new Dictionary<Vector2Int, UpgradableBehavior>();
+
     //============================================
     // Getters / Setters
     //============================================
@@ -81,8 +84,6 @@ public class GridManager : NetworkBehaviour
             0
         );
     }
-    
-    bool specialCellsSpawned = false;
 
     public override void OnNetworkSpawn()
     {
@@ -101,11 +102,6 @@ public class GridManager : NetworkBehaviour
         {
             RequestMapServerRpc(); // Request map from server on client connect
         }
-
-        if (specialCellsSpawned) return;
-
-        SpawnSpecialCells();
-        specialCellsSpawned = true;
     }
 
     //============================================
@@ -114,6 +110,7 @@ public class GridManager : NetworkBehaviour
 
     CellDataNet[] SerializeMap(CellData[,] map)
     {
+        if (map == null) return null;
         int height = map.GetLength(0);
         int width = map.GetLength(1);
 
@@ -139,6 +136,8 @@ public class GridManager : NetworkBehaviour
 
     CellData[,] DeserializeMap(CellDataNet[] data)
     {
+        if (data == null) return null; // Map already exists, no need to deserialize
+
         int height = data[0].roomId;
         int width = data[1].roomId;
 
@@ -222,15 +221,21 @@ public class GridManager : NetworkBehaviour
                 var netObj = gen.GetComponent<NetworkObject>();
                 netObj.Spawn();
 
-                gen.GetComponent<MainGeneratorBehavior>().roomId.Value = cell.roomId;
+                var upgradable = gen.GetComponent<UpgradableBehavior>();
+                upgradable.roomId.Value = cell.roomId;
+
+                upgradableCells[new Vector2Int(x, y)] = upgradable;
             }
             else if (cell.type == CellType.Door)
             {
                 var door = Instantiate(doorPrefab, worldPos, Quaternion.identity);
                 var netObj = door.GetComponent<NetworkObject>();
                 netObj.Spawn();
-                door.GetComponent<DoorBehavior>().roomId.Value = cell.roomId;
-                
+
+                var upgradable = door.GetComponent<UpgradableBehavior>();
+                upgradable.roomId.Value = cell.roomId;
+
+                upgradableCells[new Vector2Int(x, y)] = upgradable;
             }
         }
     }
@@ -320,5 +325,21 @@ public class GridManager : NetworkBehaviour
             }
         }
     } 
+
+    [Rpc(SendTo.Server)]
+    public void CellClickedServerRpc(Vector2Int tilePos, RpcParams rpcParams = default)
+    {
+        if (!upgradableCells.TryGetValue(tilePos, out var upgradable))
+        {
+            Debug.Log($"Server: no upgradable at {tilePos}");
+            return;
+        }
+
+        ulong clientId = rpcParams.Receive.SenderClientId;
+
+        Debug.Log($"Server: upgrading {upgradable.name} at {tilePos}");
+        upgradable.TryUpgrade(clientId);
+    }
+
 
 }

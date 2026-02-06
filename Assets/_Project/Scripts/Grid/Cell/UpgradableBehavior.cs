@@ -18,14 +18,49 @@ public abstract class UpgradableBehavior : NetworkBehaviour
             NetworkVariableWritePermission.Server
         );
 
-    public bool HasOwner => ownerClientId.Value != ulong.MaxValue;
+    public NetworkVariable<int> level =
+        new NetworkVariable<int>(
+            0,
+            NetworkVariableReadPermission.Everyone,
+            NetworkVariableWritePermission.Server
+        );
 
-    public bool IsOwnedBy(ulong clientId)
+    [SerializeField] protected int baseUpgradeCost = int.MaxValue;
+
+    protected bool CanUpgrade(PlayerState player)
     {
-        return ownerClientId.Value == clientId;
-
+        if (!IsServer) return false;
+        if (player == null) return false;
+        if (player.money.Value < GetUpgradeCost()) {
+            Debug.Log($"Player does not have enough money to upgrade. Required: {GetUpgradeCost()}");
+            return false;
+        }
+        
+        return true;
     }
 
-    public abstract bool TryUpgrade(ulong clientId);
+    protected abstract int GetUpgradeCost();
+    protected abstract void ApplyUpgrade();
+
+    public virtual bool TryUpgrade(ulong clientId)
+    {
+        if (!IsServer) return false;
+        if (ownerClientId.Value != clientId) return false;
+
+        var player = NetworkManager.Singleton
+            .ConnectedClients[clientId]
+            .PlayerObject
+            .GetComponent<PlayerState>();
+
+        if (!CanUpgrade(player))
+            return false;
+
+        player.money.Value -= GetUpgradeCost();
+        level.Value++;
+        Debug.Log($"Upgraded {name} to level {level.Value}.");
+
+        ApplyUpgrade();
+        return true;
+    }
 
 }

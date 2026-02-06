@@ -69,8 +69,8 @@ public class GridGenerator : MonoBehaviour{
                     y < WALL_THICKNESS ||
                     y >= size - WALL_THICKNESS;
 
-                map[y, x] = new CellData { type = isWall ? CellType.Wall : CellType.Floor 
-                , roomId = -1};
+                map[y, x] = new CellData { type = isWall ? CellType.Wall : CellType.Floor ,
+                roomId = -1};
             }
         }
     }
@@ -111,8 +111,8 @@ public class GridGenerator : MonoBehaviour{
                     y == roomTotalSize - 1;
 
                 map[startY + y, startX + x] = new CellData {
-                    type = isWall ? CellType.RoomWall : CellType.RoomFloor
-                    , roomId = roomId
+                    type = isWall ? CellType.RoomWall : CellType.RoomFloor,
+                    roomId = roomId
                     };
             }
         }
@@ -157,8 +157,8 @@ public class GridGenerator : MonoBehaviour{
         int mapY = startY + localY;
 
         map[mapY, mapX] = new CellData { 
-            type = CellType.Door 
-            , roomId = roomId
+            type = CellType.Door,
+            roomId = roomId
             };
     }
 
