@@ -190,8 +190,8 @@ public class GridManager : NetworkBehaviour
                 Vector2Int pos = new(x, y);
                 room.cells.Add(pos);
 
-                if (cell.type == CellType.Door)
-                    room.doors.Add(pos);
+                if ((int)cell.type >= (int)CellType.Door)
+                    room.upgradableCells.Add(pos);
             }
         }
     }
@@ -329,16 +329,24 @@ public class GridManager : NetworkBehaviour
     [Rpc(SendTo.Server)]
     public void CellClickedServerRpc(Vector2Int tilePos, RpcParams rpcParams = default)
     {
-        if (!upgradableCells.TryGetValue(tilePos, out var upgradable))
+        ulong clientId = rpcParams.Receive.SenderClientId;
+        if (!NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client)) return;
+
+        var player = client.PlayerObject.GetComponent<PlayerState>();
+        if (player == null) return;
+
+        RoomData clickedRoom = GetRoom(player.OwnedRoomId.Value);
+        if (clickedRoom == null || !clickedRoom.hasTile(tilePos)) return; // TODO: Capaz hacer que automaticamente se vaya a la "pestaña de player"
+
+        Debug.Log($"Player {clientId} clicked on tile {tilePos} in room {clickedRoom.roomId}");
+
+        if (upgradableCells.TryGetValue(tilePos, out var upgradable))
         {
-            Debug.Log($"Server: no upgradable at {tilePos}");
+            upgradable.TryUpgrade(clientId);
             return;
         }
 
-        ulong clientId = rpcParams.Receive.SenderClientId;
-
-        Debug.Log($"Server: upgrading {upgradable.name} at {tilePos}");
-        upgradable.TryUpgrade(clientId);
+        //TODO: hacer que cree un passive generator capaz.
     }
 
 
