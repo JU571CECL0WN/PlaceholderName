@@ -16,11 +16,14 @@ public class CanvasManager : MonoBehaviour
     public void Start(){
         menuUI.SetActive(true);
         inGameUI.SetActive(false);
+
     }
 
     public void StartGame(){
         Debug.Log("CanvasManager StartGame");
         menuUI.SetActive(false);
         inGameUI.SetActive(true);
+        InGameUIManager.Instance.EnterInGame();
     }
+    
 }

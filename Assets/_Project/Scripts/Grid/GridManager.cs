@@ -338,8 +338,6 @@ public class GridManager : NetworkBehaviour
         RoomData clickedRoom = GetRoom(player.OwnedRoomId.Value);
         if (clickedRoom == null || !clickedRoom.hasTile(tilePos)) return; // TODO: Capaz hacer que automaticamente se vaya a la "pestaña de player"
 
-        Debug.Log($"Player {clientId} clicked on tile {tilePos} in room {clickedRoom.roomId}");
-
         if (upgradableCells.TryGetValue(tilePos, out var upgradable))
         {
             upgradable.TryUpgrade(clientId);
