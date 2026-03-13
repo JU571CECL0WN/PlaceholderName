@@ -326,8 +326,37 @@ public class GridManager : NetworkBehaviour
         }
     } 
 
+    public void OnCellClicked(Vector2Int tilePos)
+    {
+        Debug.Log($"Cell clicked: {tilePos}");
+        if (!IsClient) return;
+
+        var localPlayer = NetworkManager.Singleton.LocalClient.PlayerObject
+            .GetComponent<PlayerState>();
+
+        if (localPlayer == null) return;
+
+        RoomData room = GetRoom(localPlayer.OwnedRoomId.Value);
+
+        if (room == null || !room.hasTile(tilePos)) return;
+
+        
+        if (upgradableCells.TryGetValue(tilePos, out var upgradable))
+        {
+
+            InGameUIManager.Instance.ShowCellUpgradePanel();
+
+            return;
+        }   
+
+        InGameUIManager.Instance.ShowCellCreatePanel();
+    }
+
+
+
+/* ESTE CODIGO FUE REEMPLAZADO POR LOS RPCS DE ARRIBA, PERO LO DEJO COMENTADO POR SI HAY QUE REVERTIR O USAR ALGO DE AQUI
     [Rpc(SendTo.Server)]
-    public void CellClickedServerRpc(Vector2Int tilePos, RpcParams rpcParams = default)
+    public void CellActionServerRpc(Vector2Int tilePos, RpcParams rpcParams = default)
     {
         ulong clientId = rpcParams.Receive.SenderClientId;
         if (!NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client)) return;
@@ -338,6 +367,8 @@ public class GridManager : NetworkBehaviour
         RoomData clickedRoom = GetRoom(player.OwnedRoomId.Value);
         if (clickedRoom == null || !clickedRoom.hasTile(tilePos)) return; // TODO: Capaz hacer que automaticamente se vaya a la "pestaña de player"
 
+        InGameUIManager.Instance.ShowCellCreatePanel();
+
         if (upgradableCells.TryGetValue(tilePos, out var upgradable))
         {
             upgradable.TryUpgrade(clientId);
@@ -346,6 +377,6 @@ public class GridManager : NetworkBehaviour
 
         //TODO: hacer que cree un passive generator capaz.
     }
-
+*/
 
 }

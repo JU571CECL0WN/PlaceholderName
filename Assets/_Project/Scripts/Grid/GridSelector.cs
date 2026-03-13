@@ -37,7 +37,7 @@ public class GridSelector : MonoBehaviour
 
         if (Mouse.current.leftButton.wasPressedThisFrame)
         {
-            grid.CellClickedServerRpc(cell);
+            grid.OnCellClicked(cell);
         }
     }
 }
